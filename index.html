@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>创投公司（辰能资本）定增项目收益总览</title>
+<style>
+:root{
+  --red:#e0453a;
+  --green:#15a877;
+  --bg:#f4f5f7;
+  --card:#ffffff;
+  --txt:#1c1c1e;
+  --sub:#9aa0a6;
+  --line:#f1f2f4;
+  --page-max:480px;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{background:var(--bg);overflow-x:hidden}
+body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",Segoe UI,sans-serif;color:var(--txt);-webkit-font-smoothing:antialiased}
+.app{max-width:var(--page-max);margin:0 auto;padding:14px 12px 40px}
+
+/* ---------- top bar ---------- */
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:4px 2px 12px}
+.topbar .title{font-size:13px;color:#8a8f95;flex:1;padding-right:12px;line-height:1.4}
+.gear{width:42px;height:42px;border-radius:50%;background:#111;border:none;flex:none;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 10px rgba(0,0,0,.25);transition:transform .2s}
+.gear:active{transform:scale(.92)}
+.gear svg{width:22px;height:22px;fill:#fff}
+
+/* ---------- cards ---------- */
+.card{background:var(--card);border-radius:16px;padding:18px 16px;margin-bottom:14px;box-shadow:0 1px 3px rgba(20,30,50,.05)}
+.card-label{font-size:12px;color:var(--sub);margin-bottom:14px}
+.pie-row{display:flex;align-items:center;gap:14px}
+.pie-row svg{width:150px;height:150px;flex:none}
+.legend{list-style:none;flex:1;display:flex;flex-direction:column;gap:7px;min-width:0}
+.legend li{display:flex;align-items:center;font-size:11px;color:#5f6468;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.legend .dot{width:9px;height:9px;border-radius:2px;margin-right:6px;flex:none}
+.divider{height:1px;background:var(--line);margin:16px -16px}
+.total-label{font-size:12px;color:var(--sub);text-align:center}
+.total-value{font-size:30px;font-weight:700;text-align:center;letter-spacing:.5px;margin:6px 0 18px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px 8px;margin-bottom:14px}
+.grid2 .k{font-size:11px;color:var(--sub);text-align:center;margin-bottom:5px}
+.grid2 .v{font-size:15px;font-weight:600;text-align:center}
+.daypnl .k{font-size:11px;color:var(--sub);text-align:center;margin-bottom:5px}
+.daypnl .v{font-size:15px;font-weight:600;text-align:center}
+.up{color:var(--red)} .down{color:var(--green)} .flat{color:#8a8f95}
+
+/* ---------- list head ---------- */
+.list-head{display:flex;align-items:center;justify-content:space-between;margin:2px 2px 12px}
+.list-head .h{font-size:15px;font-weight:700}
+.refresh{display:flex;align-items:center;gap:6px;background:#111;color:#fff;border:none;border-radius:9px;padding:9px 16px;font-size:12px;cursor:pointer;transition:opacity .2s}
+.refresh:active{opacity:.75}
+.refresh svg{width:13px;height:13px;fill:#fff}
+.refresh.spinning svg{animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ---------- stock card ---------- */
+.s-card{background:var(--card);border-radius:16px;padding:16px;margin-bottom:12px;box-shadow:0 1px 3px rgba(20,30,50,.05)}
+.s-head{display:flex;align-items:baseline;justify-content:space-between;padding-bottom:10px}
+.s-name{font-size:16px;font-weight:700}
+.s-code{font-size:11px;color:var(--sub);font-weight:400;margin-left:6px}
+.s-price{text-align:right}
+.s-price b{font-size:17px;font-weight:700;color:var(--txt)}
+.s-price span{font-size:12px;font-weight:600;margin-left:6px}
+.s-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-top:1px solid var(--line)}
+.s-row .k{font-size:12px;color:var(--sub)}
+.s-row .v{font-size:13px;font-weight:600}
+.s-foot{font-size:10px;color:#c0c4c9;margin-top:9px}
+.empty{text-align:center;color:var(--sub);font-size:13px;padding:30px 0}
+
+/* ---------- research brief ---------- */
+.research-title{display:flex;align-items:flex-end;justify-content:space-between;margin:24px 2px 12px}
+.research-title .h{font-size:15px;font-weight:700}
+.research-title .note{font-size:10px;color:#a0a5ab}
+.brief-card{background:var(--card);border-radius:16px;padding:16px;margin-bottom:12px;box-shadow:0 1px 3px rgba(20,30,50,.05)}
+.brief-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.brief-head .h{font-size:14px;font-weight:700}
+.brief-head .time{font-size:10px;color:var(--sub)}
+.brief-intro{font-size:12px;line-height:1.65;color:#60656b;background:#f7f8fa;border-radius:10px;padding:10px 11px;margin-bottom:10px}
+.news-item{padding:11px 0;border-top:1px solid var(--line)}
+.news-item:first-of-type{border-top:0;padding-top:2px}
+.news-top{display:flex;align-items:center;gap:7px;margin-bottom:5px}
+.tag{display:inline-block;padding:3px 6px;border-radius:5px;background:#eef3ff;color:#476fce;font-size:10px;font-weight:600;line-height:1}
+.tag.warn{background:#fff4e8;color:#b87522}.tag.risk{background:#fdefee;color:#c24e45}.tag.good{background:#ecf8f2;color:#188b60}
+.news-top b{font-size:12px}.news-item p{font-size:12px;line-height:1.55;color:#61666c}
+.review-item{padding:11px 0;border-top:1px solid var(--line)}
+.review-item:first-of-type{border-top:0;padding-top:2px}
+.review-item .name{font-size:13px;font-weight:700}.review-item .move{font-size:12px;font-weight:700;margin-left:6px}
+.review-item p{font-size:12px;line-height:1.58;color:#62676d;margin-top:5px}
+.watch-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.watch{background:#f7f8fa;border-radius:11px;padding:11px}.watch b{font-size:12px;display:block;margin-bottom:4px}.watch p{font-size:11px;color:#656a70;line-height:1.5}
+.disclaimer{font-size:10px;color:#a4a8ad;line-height:1.6;margin-top:11px}
+
+/* ---------- footer ---------- */
+.foot{font-size:10px;color:#b7bbc0;text-align:center;margin-top:18px;line-height:1.7}
+
+/* ---------- settings sheet ---------- */
+.mask{position:fixed;inset:0;background:rgba(0,0,0,.45);opacity:0;pointer-events:none;transition:opacity .25s;z-index:40}
+.mask.show{opacity:1;pointer-events:auto}
+.sheet{position:fixed;left:50%;transform:translate(-50%,105%);bottom:0;width:100%;max-width:480px;max-height:82vh;background:#fff;border-radius:20px 20px 0 0;z-index:50;display:flex;flex-direction:column;transition:transform .3s cubic-bezier(.2,.8,.25,1);box-shadow:0 -8px 30px rgba(0,0,0,.15)}
+.sheet.show{transform:translate(-50%,0)}
+.sheet-head{display:flex;align-items:center;justify-content:space-between;padding:16px 18px 12px;border-bottom:1px solid var(--line)}
+.sheet-head .t{font-size:15px;font-weight:700}
+.sheet-head .x{border:none;background:#f2f3f5;width:28px;height:28px;border-radius:50%;font-size:15px;color:#666;cursor:pointer;line-height:1}
+.sheet-body{overflow-y:auto;padding:14px 18px 8px;flex:1}
+.f-label{font-size:12px;color:var(--sub);margin:4px 0 6px}
+.f-input{width:100%;border:1px solid #e3e5e8;border-radius:9px;padding:9px 10px;font-size:13px;margin-bottom:12px;outline:none;background:#fafbfc}
+.f-input:focus{border-color:#111;background:#fff}
+.e-row{border:1px solid #eceef0;border-radius:12px;padding:12px;margin-bottom:10px}
+.e-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.e-name{font-size:14px;font-weight:600}
+.e-code{font-size:10px;color:var(--sub);margin-left:6px}
+.e-del{border:none;background:#fdecec;color:var(--red);font-size:11px;border-radius:7px;padding:5px 10px;cursor:pointer}
+.e-fields{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.e-fields label{font-size:10px;color:var(--sub);display:flex;flex-direction:column;gap:4px}
+.e-fields input{border:1px solid #e3e5e8;border-radius:8px;padding:7px 8px;font-size:13px;outline:none;background:#fafbfc;width:100%}
+.e-fields input:focus{border-color:#111;background:#fff}
+.add-box{background:#f7f8fa;border-radius:12px;padding:12px;margin:14px 0 6px}
+.add-box .t{font-size:12px;font-weight:600;margin-bottom:8px}
+.add-grid{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:8px;margin-bottom:8px}
+.add-grid input{border:1px solid #e3e5e8;border-radius:8px;padding:8px;font-size:12px;outline:none;background:#fff;width:100%}
+.add-btn{width:100%;background:#111;color:#fff;border:none;border-radius:9px;padding:10px;font-size:13px;cursor:pointer}
+.add-btn:active{opacity:.8}
+.sheet-foot{padding:10px 18px calc(14px + env(safe-area-inset-bottom));border-top:1px solid var(--line)}
+.foot-btns{display:flex;gap:10px}
+.foot-btns .save-btn{flex:1;width:auto}
+.share-btn{flex:1;background:#fff;border:1px solid #111;color:#111;border-radius:11px;padding:13px;font-size:14px;font-weight:600;cursor:pointer}
+.share-btn:active{opacity:.8}
+.sheet-tip{font-size:10px;color:#9aa0a6;text-align:center;margin-top:10px;line-height:1.6}
+.save-btn{width:100%;background:#111;color:#fff;border:none;border-radius:11px;padding:13px;font-size:14px;font-weight:600;cursor:pointer}
+.save-btn:active{opacity:.8}
+.toast{position:fixed;left:50%;top:18px;transform:translateX(-50%) translateY(-60px);background:rgba(20,20,20,.88);color:#fff;font-size:12px;border-radius:20px;padding:8px 18px;z-index:99;transition:transform .3s;pointer-events:none;max-width:86vw;text-align:center}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.pwd-mask{position:fixed;inset:0;background:rgba(0,0,0,.45);opacity:0;pointer-events:none;transition:opacity .25s;z-index:60}
+.pwd-mask.show{opacity:1;pointer-events:auto}
+.pwd-box{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%) scale(.92);width:280px;background:#fff;border-radius:16px;padding:22px 20px;z-index:61;opacity:0;pointer-events:none;transition:all .25s;text-align:center;box-shadow:0 12px 40px rgba(0,0,0,.2)}
+.pwd-box.show{opacity:1;pointer-events:auto;transform:translate(-50%,-50%) scale(1)}
+.pwd-box .t{font-size:15px;font-weight:700;margin-bottom:6px}
+.pwd-box .s{font-size:11px;color:var(--sub);margin-bottom:14px}
+.pwd-box input{width:100%;border:1px solid #e3e5e8;border-radius:10px;padding:10px;font-size:14px;text-align:center;letter-spacing:2px;outline:none;background:#fafbfc}
+.pwd-box input:focus{border-color:#111;background:#fff}
+.pwd-btns{display:flex;gap:10px;margin-top:14px}
+.pwd-btns button{flex:1;border:none;border-radius:10px;padding:10px;font-size:13px;cursor:pointer}
+.pwd-btns button:active{opacity:.8}
+.pwd-cancel{background:#f2f3f5;color:#666}
+.pwd-ok{background:#111;color:#fff}
+
+/* ===== AI 投研驾驶舱 v2 ===== */
+.ai-wrap{max-width:var(--page-max);margin:18px auto 28px;padding:0 12px;box-sizing:border-box}.ai-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.ai-card{background:#fff;border:1px solid #e8ebef;border-radius:14px;padding:16px;box-shadow:0 3px 12px rgba(20,30,55,.035)}.ai-card.full{grid-column:1/-1}.ai-card h3{font-size:17px;color:#1f2937;margin:0 0 4px}.ai-sub{font-size:11px;color:#9aa3b2;font-weight:400;margin-left:7px}.ai-list{display:grid;gap:9px;margin-top:11px}.ai-item{padding:10px 11px;background:#f8fafc;border-radius:10px}.ai-title{font-size:13px;font-weight:700;color:#293548}.ai-text{font-size:12px;line-height:1.55;color:#5c6879;margin-top:5px}.ai-source{font-size:10px;color:#a0a8b5;margin-top:5px}.ai-review{display:grid;gap:8px;margin-top:11px}.ai-row{border:1px solid #edf0f4;border-radius:10px;padding:10px}.ai-head{display:flex;justify-content:space-between;align-items:center}.ai-name{font-weight:700;color:#293548;font-size:13px}.ai-pct{font-weight:700;font-size:13px}.up{color:#d34a42}.down{color:#15916a}.flat{color:#718096}.ai-reason{font-size:12px;line-height:1.55;color:#5c6879;margin-top:5px}.ai-observe{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-top:11px}.ai-ob{padding:11px;border-radius:10px;background:#f8fafc}.ai-ob b{display:block;font-size:13px;margin-bottom:5px}.ai-ob span{font-size:12px;color:#5c6879;line-height:1.5}.ai-badge{display:inline-block;padding:2px 7px;border-radius:99px;background:#eef2f7;color:#667085;font-size:10px;margin-right:5px}.ai-badge.good{background:#edf8f1;color:#26734d}.ai-badge.warn{background:#fff6e6;color:#99651e}.ai-badge.hot{background:#fff0ef;color:#c3433a}.ai-foot{margin-top:10px;font-size:10px;color:#9aa3b2;line-height:1.5}@media(max-width:800px){.ai-grid{grid-template-columns:1fr}.ai-card.full{grid-column:auto}.ai-observe{grid-template-columns:1fr}}
+
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <div class="title" id="pageTitle">创投公司（辰能资本）定增项目收益总览</div>
+    <button class="gear" id="gearBtn" title="设置" aria-label="设置">
+      <svg viewBox="0 0 24 24"><path d="M19.14 12.94a7.5 7.5 0 0 0 .06-.94 7.5 7.5 0 0 0-.06-.94l2.03-1.58a.5.5 0 0 0 .12-.64l-1.92-3.32a.5.5 0 0 0-.61-.22l-2.39.96a7.3 7.3 0 0 0-1.62-.94l-.36-2.54a.5.5 0 0 0-.5-.42h-3.84a.5.5 0 0 0-.5.42l-.36 2.54c-.59.24-1.13.56-1.62.94l-2.39-.96a.5.5 0 0 0-.61.22L2.65 8.84a.5.5 0 0 0 .12.64l2.03 1.58a7.5 7.5 0 0 0 0 1.88l-2.03 1.58a.5.5 0 0 0-.12.64l1.92 3.32c.13.23.4.32.61.22l2.39-.96c.49.38 1.03.7 1.62.94l.36 2.54c.04.24.25.42.5.42h3.84c.25 0 .46-.18.5-.42l.36-2.54a7.3 7.3 0 0 0 1.62-.94l2.39.96c.22.1.48 0 .61-.22l1.92-3.32a.5.5 0 0 0-.12-.64l-2.03-1.58ZM12 15.5A3.5 3.5 0 1 1 12 8.5a3.5 3.5 0 0 1 0 7Z"></path></svg>
+    </button>
+  </div>
+
+  <div class="card">
+    <div class="card-label">市值占比</div>
+    <div class="pie-row">
+      <svg id="donut" viewBox="0 0 150 150"><circle cx="75" cy="75" r="52" fill="none" stroke="#4e7cf6" stroke-width="27" stroke-dasharray="106.98709347367284 219.73854249966567" stroke-dashoffset="-1.25" transform="rotate(-90 75 75)"></circle><circle cx="75" cy="75" r="52" fill="none" stroke="#43c98b" stroke-width="27" stroke-dasharray="44.19848201282733 282.5271539605112" stroke-dashoffset="-110.74" transform="rotate(-90 75 75)"></circle><circle cx="75" cy="75" r="52" fill="none" stroke="#f6c343" stroke-width="27" stroke-dasharray="44.17804373313379 282.5475922402047" stroke-dashoffset="-157.44" transform="rotate(-90 75 75)"></circle><circle cx="75" cy="75" r="52" fill="none" stroke="#e8684a" stroke-width="27" stroke-dasharray="42.619842640844716 284.1057933324938" stroke-dashoffset="-204.11" transform="rotate(-90 75 75)"></circle><circle cx="75" cy="75" r="52" fill="none" stroke="#8d6fd0" stroke-width="27" stroke-dasharray="28.32927379435876 298.39636217897976" stroke-dashoffset="-249.23" transform="rotate(-90 75 75)"></circle><circle cx="75" cy="75" r="52" fill="none" stroke="#f2994a" stroke-width="27" stroke-dasharray="15.747691853176349 310.9779441201622" stroke-dashoffset="-280.06" transform="rotate(-90 75 75)"></circle><circle cx="75" cy="75" r="52" fill="none" stroke="#5bc5e8" stroke-width="27" stroke-dasharray="13.166135461634356 313.55950051170413" stroke-dashoffset="-298.31" transform="rotate(-90 75 75)"></circle><circle cx="75" cy="75" r="52" fill="none" stroke="#d069a8" stroke-width="27" stroke-dasharray="11.499073003690368 315.22656296964817" stroke-dashoffset="-313.98" transform="rotate(-90 75 75)"></circle></svg>
+      <ul class="legend" id="legend"><li><span class="dot" style="background:#4e7cf6"></span>电投能源 33.5%</li><li><span class="dot" style="background:#43c98b"></span>江丰电子 14.3%</li><li><span class="dot" style="background:#f6c343"></span>建投能源 14.3%</li><li><span class="dot" style="background:#e8684a"></span>长川科技 13.8%</li><li><span class="dot" style="background:#8d6fd0"></span>海思科 9.4%</li><li><span class="dot" style="background:#f2994a"></span>奥比中光 5.6%</li><li><span class="dot" style="background:#5bc5e8"></span>广电计量 4.8%</li><li><span class="dot" style="background:#d069a8"></span>路维光电 4.3%</li></ul>
+    </div>
+    <div class="divider"></div>
+    <div class="total-label">账户总市值</div>
+    <div class="total-value " id="vTotal">62575.27万元</div>
+    <div class="grid2">
+      <div><div class="k">初始投资额</div><div class="v " id="vCost">57000.00万元</div></div>
+      <div><div class="k">浮动盈亏</div><div class="v up" id="vPnl">+5575.30万元</div></div>
+      <div><div class="k">投资增长率</div><div class="v up" id="vGrowth">+9.78%</div></div>
+      <div><div class="k">当日涨跌幅</div><div class="v up" id="vDayPct">+2.57%</div></div>
+    </div>
+    <div class="daypnl">
+      <div class="k">当日浮动盈亏</div>
+      <div class="v up" id="vDayPnl">+1566.86万元</div>
+    </div>
+  </div>
+
+  <div class="list-head">
+    <div class="h">持仓明细</div>
+    <button class="refresh" id="refreshBtn">
+      <svg viewBox="0 0 24 24"><path d="M17.65 6.35A7.96 7.96 0 0 0 12 4a8 8 0 1 0 7.73 10h-2.08A6 6 0 1 1 12 6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35Z"></path></svg>
+      <span id="refreshTxt">点击刷新</span>
+    </button>
+  </div>
+
+  <div id="cards"><div class="s-card"><div class="s-head"><div class="s-name">海思科<span class="s-code">SZ.002653</span></div><div class="s-price"><b>70.11元</b><span class="up">+1.05%</span></div></div><div class="s-row"><div class="k">成本总额</div><div class="v ">5000.00万元</div></div><div class="s-row"><div class="k">当前市值</div><div class="v ">5904.50万元</div></div><div class="s-row"><div class="k">持仓数量</div><div class="v ">842176</div></div><div class="s-row"><div class="k">买入均价</div><div class="v ">59.37元</div></div><div class="s-row"><div class="k">当日涨跌幅</div><div class="v up">+1.05%</div></div><div class="s-row"><div class="k">当日浮动盈亏</div><div class="v up">+61.48万元</div></div><div class="s-row"><div class="k">总盈亏情况</div><div class="v up">+904.50万元</div></div><div class="s-row"><div class="k">浮盈亏/浮亏比例</div><div class="v up">+18.09%</div></div><div class="s-foot">行情时间 · 2026-08-17 16:14:45</div></div><div class="s-card"><div class="s-head"><div class="s-name">长川科技<span class="s-code">SZ.300604</span></div><div class="s-price"><b>302.57元</b><span class="up">+6.90%</span></div></div><div class="s-row"><div class="k">成本总额</div><div class="v ">8000.00万元</div></div><div class="s-row"><div class="k">当前市值</div><div class="v ">8641.46万元</div></div><div class="s-row"><div class="k">持仓数量</div><div class="v ">285602</div></div><div class="s-row"><div class="k">买入均价</div><div class="v ">280.11元</div></div><div class="s-row"><div class="k">当日涨跌幅</div><div class="v up">+6.90%</div></div><div class="s-row"><div class="k">当日浮动盈亏</div><div class="v up">+557.50万元</div></div><div class="s-row"><div class="k">总盈亏情况</div><div class="v up">+641.46万元</div></div><div class="s-row"><div class="k">浮盈亏/浮亏比例</div><div class="v up">+8.02%</div></div><div class="s-foot">行情时间 · 2026-08-17 16:14:39</div></div><div class="s-card"><div class="s-head"><div class="s-name">路维光电<span class="s-code">SH.688401</span></div><div class="s-price"><b>74.50元</b><span class="up">+3.20%</span></div></div><div class="s-row"><div class="k">成本总额</div><div class="v ">3000.00万元</div></div><div class="s-row"><div class="k">当前市值</div><div class="v ">2681.14万元</div></div><div class="s-row"><div class="k">持仓数量</div><div class="v ">359884</div></div><div class="s-row"><div class="k">买入均价</div><div class="v ">83.36元</div></div><div class="s-row"><div class="k">当日涨跌幅</div><div class="v up">+3.20%</div></div><div class="s-row"><div class="k">当日浮动盈亏</div><div class="v up">+83.13万元</div></div><div class="s-row"><div class="k">总盈亏情况</div><div class="v down">-318.86万元</div></div><div class="s-row"><div class="k">浮盈亏/浮亏比例</div><div class="v down">-10.63%</div></div><div class="s-foot">行情时间 · 2026-08-17 16:14:32</div></div><div class="s-card"><div class="s-head"><div class="s-name">电投能源<span class="s-code">SZ.002128</span></div><div class="s-price"><b>27.26元</b><span class="up">+1.38%</span></div></div><div class="s-row"><div class="k">成本总额</div><div class="v ">20000.00万元</div></div><div class="s-row"><div class="k">当前市值</div><div class="v ">20969.23万元</div></div><div class="s-row"><div class="k">持仓数量</div><div class="v ">7692307</div></div><div class="s-row"><div class="k">买入均价</div><div class="v ">26.00元</div></div><div class="s-row"><div class="k">当日涨跌幅</div><div class="v up">+1.38%</div></div><div class="s-row"><div class="k">当日浮动盈亏</div><div class="v up">+284.62万元</div></div><div class="s-row"><div class="k">总盈亏情况</div><div class="v up">+969.23万元</div></div><div class="s-row"><div class="k">浮盈亏/浮亏比例</div><div class="v up">+4.85%</div></div><div class="s-foot">行情时间 · 2026-08-17 16:14:24</div></div><div class="s-card"><div class="s-head"><div class="s-name">广电计量<span class="s-code">SZ.002967</span></div><div class="s-price"><b>18.01元</b><span class="up">+2.74%</span></div></div><div class="s-row"><div class="k">成本总额</div><div class="v ">4000.00万元</div></div><div class="s-row"><div class="k">当前市值</div><div class="v ">3000.42万元</div></div><div class="s-row"><div class="k">持仓数量</div><div class="v ">1665972</div></div><div class="s-row"><div class="k">买入均价</div><div class="v ">24.01元</div></div><div class="s-row"><div class="k">当日涨跌幅</div><div class="v up">+2.74%</div></div><div class="s-row"><div class="k">当日浮动盈亏</div><div class="v up">+79.97万元</div></div><div class="s-row"><div class="k">总盈亏情况</div><div class="v down">-999.58万元</div></div><div class="s-row"><div class="k">浮盈亏/浮亏比例</div><div class="v down">-24.99%</div></div><div class="s-foot">行情时间 · 2026-08-17 16:14:06</div></div><div class="s-card"><div class="s-head"><div class="s-name">江丰电子<span class="s-code">SZ.300666</span></div><div class="s-price"><b>269.82元</b><span class="up">+5.44%</span></div></div><div class="s-row"><div class="k">成本总额</div><div class="v ">6000.00万元</div></div><div class="s-row"><div class="k">当前市值</div><div class="v ">8943.80万元</div></div><div class="s-row"><div class="k">持仓数量</div><div class="v ">331473</div></div><div class="s-row"><div class="k">买入均价</div><div class="v ">181.01元</div></div><div class="s-row"><div class="k">当日涨跌幅</div><div class="v up">+5.44%</div></div><div class="s-row"><div class="k">当日浮动盈亏</div><div class="v up">+461.41万元</div></div><div class="s-row"><div class="k">总盈亏情况</div><div class="v up">+2943.81万元</div></div><div class="s-row"><div class="k">浮盈亏/浮亏比例</div><div class="v up">+49.06%</div></div><div class="s-foot">行情时间 · 2026-08-17 16:14:09</div></div><div class="s-card"><div class="s-head"><div class="s-name">奥比中光<span class="s-code">SH.688322</span></div><div class="s-price"><b>113.00元</b><span class="up">+2.75%</span></div></div><div class="s-row"><div class="k">成本总额</div><div class="v ">3000.00万元</div></div><div class="s-row"><div class="k">当前市值</div><div class="v ">3494.84万元</div></div><div class="s-row"><div class="k">持仓数量</div><div class="v ">309278</div></div><div class="s-row"><div class="k">买入均价</div><div class="v ">97.00元</div></div><div class="s-row"><div class="k">当日涨跌幅</div><div class="v up">+2.75%</div></div><div class="s-row"><div class="k">当日浮动盈亏</div><div class="v up">+93.40万元</div></div><div class="s-row"><div class="k">总盈亏情况</div><div class="v up">+494.84万元</div></div><div class="s-row"><div class="k">浮盈亏/浮亏比例</div><div class="v up">+16.49%</div></div><div class="s-foot">行情时间 · 2026-08-17 16:14:35</div></div><div class="s-card"><div class="s-head"><div class="s-name">建投能源<span class="s-code">SZ.000600</span></div><div class="s-price"><b>8.18元</b><span class="down">-0.61%</span></div></div><div class="s-row"><div class="k">成本总额</div><div class="v ">8000.00万元</div></div><div class="s-row"><div class="k">当前市值</div><div class="v ">8939.89万元</div></div><div class="s-row"><div class="k">持仓数量</div><div class="v ">10928961</div></div><div class="s-row"><div class="k">买入均价</div><div class="v ">7.32元</div></div><div class="s-row"><div class="k">当日涨跌幅</div><div class="v down">-0.61%</div></div><div class="s-row"><div class="k">当日浮动盈亏</div><div class="v down">-54.64万元</div></div><div class="s-row"><div class="k">总盈亏情况</div><div class="v up">+939.89万元</div></div><div class="s-row"><div class="k">浮盈亏/浮亏比例</div><div class="v up">+11.75%</div></div><div class="s-foot">行情时间 · 2026-08-17 16:14:39</div></div></div>
+
+  <div class="foot" id="foot">数据来源：腾讯财经 · 行情加载中…</div>
+</div>
+
+<div class="mask" id="mask"></div>
+<div class="sheet" id="sheet">
+  <div class="sheet-head">
+    <div class="t">持仓设置</div>
+    <button class="x" id="closeBtn" aria-label="关闭">✕</button>
+  </div>
+  <div class="sheet-body">
+    <div class="f-label">页面标题</div>
+    <input class="f-input" id="setTitle" placeholder="页面顶部标题">
+    <div class="f-label">持仓列表（可修改数量 / 均价，或删除）</div>
+    <div id="editList"><div class="e-row" data-i="0"><div class="e-top"><div><span class="e-name">海思科</span><span class="e-code">SZ.002653</span></div><button class="e-del" data-del="0">删除</button></div><div class="e-fields"><label>持仓数量<input type="number" data-i="0" data-k="shares" value="842176"></label><label>买入均价(元)<input type="number" step="0.01" data-i="0" data-k="avg" value="59.37"></label></div></div><div class="e-row" data-i="1"><div class="e-top"><div><span class="e-name">长川科技</span><span class="e-code">SZ.300604</span></div><button class="e-del" data-del="1">删除</button></div><div class="e-fields"><label>持仓数量<input type="number" data-i="1" data-k="shares" value="285602"></label><label>买入均价(元)<input type="number" step="0.01" data-i="1" data-k="avg" value="280.11"></label></div></div><div class="e-row" data-i="2"><div class="e-top"><div><span class="e-name">路维光电</span><span class="e-code">SH.688401</span></div><button class="e-del" data-del="2">删除</button></div><div class="e-fields"><label>持仓数量<input type="number" data-i="2" data-k="shares" value="359884"></label><label>买入均价(元)<input type="number" step="0.01" data-i="2" data-k="avg" value="83.36"></label></div></div><div class="e-row" data-i="3"><div class="e-top"><div><span class="e-name">电投能源</span><span class="e-code">SZ.002128</span></div><button class="e-del" data-del="3">删除</button></div><div class="e-fields"><label>持仓数量<input type="number" data-i="3" data-k="shares" value="7692307"></label><label>买入均价(元)<input type="number" step="0.01" data-i="3" data-k="avg" value="26"></label></div></div><div class="e-row" data-i="4"><div class="e-top"><div><span class="e-name">广电计量</span><span class="e-code">SZ.002967</span></div><button class="e-del" data-del="4">删除</button></div><div class="e-fields"><label>持仓数量<input type="number" data-i="4" data-k="shares" value="1665972"></label><label>买入均价(元)<input type="number" step="0.01" data-i="4" data-k="avg" value="24.01"></label></div></div><div class="e-row" data-i="5"><div class="e-top"><div><span class="e-name">江丰电子</span><span class="e-code">SZ.300666</span></div><button class="e-del" data-del="5">删除</button></div><div class="e-fields"><label>持仓数量<input type="number" data-i="5" data-k="shares" value="331473"></label><label>买入均价(元)<input type="number" step="0.01" data-i="5" data-k="avg" value="181.01"></label></div></div><div class="e-row" data-i="6"><div class="e-top"><div><span class="e-name">奥比中光</span><span class="e-code">SH.688322</span></div><button class="e-del" data-del="6">删除</button></div><div class="e-fields"><label>持仓数量<input type="number" data-i="6" data-k="shares" value="309278"></label><label>买入均价(元)<input type="number" step="0.01" data-i="6" data-k="avg" value="97"></label></div></div><div class="e-row" data-i="7"><div class="e-top"><div><span class="e-name">建投能源</span><span class="e-code">SZ.000600</span></div><button class="e-del" data-del="7">删除</button></div><div class="e-fields"><label>持仓数量<input type="number" data-i="7" data-k="shares" value="10928961"></label><label>买入均价(元)<input type="number" step="0.01" data-i="7" data-k="avg" value="7.32"></label></div></div></div>
+    <div class="add-box">
+      <div class="t">新增股票</div>
+      <div class="add-grid">
+        <input id="addCode" placeholder="代码 如 600519">
+        <input id="addShares" type="number" placeholder="持仓数量">
+        <input id="addAvg" type="number" step="0.01" placeholder="买入均价">
+      </div>
+      <button class="add-btn" id="addBtn">添加</button>
+    </div>
+  </div>
+  <div class="sheet-foot">
+    <div class="foot-btns">
+      <button class="share-btn" id="shareBtn">生成分享版文件</button>
+      <button class="save-btn" id="saveBtn">保存并刷新</button>
+    </div>
+    <div class="sheet-tip">新增/修改后会先保存在当前浏览器；点击「保存并刷新」即可确认。要让领导或同事看到同一份新持仓，请点击「生成分享版文件」并把生成的HTML链接/文件发给他们。</div>
+  </div>
+</div>
+<div class="pwd-mask" id="pwdMask"></div>
+<div class="pwd-box" id="pwdBox">
+  <div class="t">设置需要密码</div>
+  <div class="s">仅管理员可修改持仓设置</div>
+  <input id="pwdInput" type="password" inputmode="numeric" placeholder="请输入密码" autocomplete="off">
+  <div class="pwd-btns">
+    <button class="pwd-cancel" id="pwdCancel">取消</button>
+    <button class="pwd-ok" id="pwdOk">确定</button>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+'use strict';
+/* ================= 状态 ================= */
+var LS_KEY='cn_holdings_v1';
+var DEFAULT_STATE={"ver":1786977222303,"title":"创投公司（辰能资本）定增项目收益总览","holdings":[{"code":"sz002653","name":"海思科","shares":842176,"avg":59.37},{"code":"sz300604","name":"长川科技","shares":285602,"avg":280.11},{"code":"sh688401","name":"路维光电","shares":359884,"avg":83.36},{"code":"sz002128","name":"电投能源","shares":7692307,"avg":26},{"code":"sz002967","name":"广电计量","shares":1665972,"avg":24.01},{"code":"sz300666","name":"江丰电子","shares":331473,"avg":181.01},{"code":"sh688322","name":"奥比中光","shares":309278,"avg":97},{"code":"sz000600","name":"建投能源","shares":10928961,"avg":7.32}]};
+var PALETTE=['#4e7cf6','#43c98b','#f6c343','#e8684a','#8d6fd0','#f2994a','#5bc5e8','#d069a8','#7d9b4e','#9aa0a6'];
+var REFRESH_MS=30000;
+
+/* ===== 统一AI内容数据结构（第3步） =====
+   未来云端定时任务生成 daily.json 后，只需把下方内联数据替换为 fetch('daily.json') 读取，页面其余部分不动。 */
+var DAILY={"date":"2026-08-17","source":"static-demo","morning":[{"tag":"业绩","cls":"good","title":"电投能源：中报预增，煤电铝一体化继续提供业绩支撑","text":"2026H1预计归母净利润51.73—53.80亿元，同比增长45.76%—51.59%。重点关注铝价、煤价和一体化协同。","source":"来源/时间：2026-07-15 半年度业绩预告"},{"tag":"业绩","cls":"good","title":"长川科技：半导体测试设备需求释放","text":"2026H1预计归母净利润9.0—10.0亿元，同比增长110.76%—134.18%，多产品线增长。","source":"来源/时间：2026-06-23 半年度业绩预告"},{"tag":"业绩","cls":"good","title":"海思科：创新药销售与授权收入带来高增长","text":"2026H1预计归母净利润7.9—8.7亿元，同比增长513.25%—575.35%；授权里程碑收入需单独观察持续性。","source":"来源/时间：2026-07-09 半年度业绩预告"},{"tag":"半导体","cls":"hot","title":"江丰电子：AI算力与晶圆扩产推动业务增长","text":"2026H1预计营收约27亿元，同比增长约30%；同时需关注非经常性损益对归母利润的影响。","source":"来源/时间：2026-07-15 半年度业绩预告"}],"review":[{"name":"海思科","cls":"good","state":"偏强","body":"<b>可能驱动：</b>创新药销售增长 + 授权收入催化<br><b>证据：</b>2026H1预计归母净利润同比增长513.25%—575.35%。<br><b>影响判断：</b>基本面催化强，但高增速持续性需要验证。<br><b>明日关注：</b>核心创新药销售、授权里程碑及医药板块强弱。"},{"name":"长川科技","cls":"good","state":"偏强","body":"<b>可能驱动：</b>半导体设备需求与多产品线放量<br><b>证据：</b>2026H1预计归母净利润同比增长110.76%—134.18%。<br><b>影响判断：</b>经营趋势偏强，短线容易受板块情绪放大。<br><b>明日关注：</b>半导体设备板块、成交量及新产品放量。"},{"name":"路维光电","cls":"warn","state":"震荡偏强","body":"<b>可能驱动：</b>掩膜版国产替代 + OLED扩产<br><b>证据：</b>公开材料显示相关产线扩产带来掩膜版需求。<br><b>影响判断：</b>中期逻辑清晰，但缺少足够强的最新公司级催化。<br><b>明日关注：</b>订单、产能利用率及客户验证。"},{"name":"电投能源","cls":"good","state":"偏强","body":"<b>可能驱动：</b>电解铝景气改善 + 煤电铝一体化协同<br><b>证据：</b>2026H1预计归母净利润51.73—53.80亿元，同比增长45.76%—51.59%。<br><b>影响判断：</b>基本面催化较强，重点看盈利改善能否持续。<br><b>明日关注：</b>铝价、煤价、电价及板块相对强弱。"},{"name":"广电计量","cls":"good","state":"稳健偏强","body":"<b>可能驱动：</b>新能源汽车、集成电路等行业需求 + 业务结构优化<br><b>证据：</b>2026H1预计营收同比增长11.62%—16.35%，归母净利润同比增长18.17%—28.45%。<br><b>影响判断：</b>增长质量相对均衡。<br><b>明日关注：</b>订单增长、利润率及集成电路测试业务。"},{"name":"江丰电子","cls":"good","state":"偏强","body":"<b>可能驱动：</b>AI算力/晶圆扩产 + 靶材及精密零部件放量<br><b>证据：</b>2026H1预计营收约27亿元，同比增长约30%，同时需关注非经常性损益。<br><b>影响判断：</b>经营趋势偏强，但归母利润与经营性利润存在差异。<br><b>明日关注：</b>扣非利润、先进制程靶材及半导体资本开支。"},{"name":"奥比中光","cls":"warn","state":"高弹性","body":"<b>可能驱动：</b>3D视觉 + 机器人/具身智能 + AI端侧硬件<br><b>证据：</b>业务与机器人、AI视觉感知主题关联度高，同时推进H股筹划及募投项目。<br><b>影响判断：</b>主题弹性高，波动风险也较高。<br><b>明日关注：</b>机器人/AI板块、订单兑现及成交量。"},{"name":"建投能源","cls":"warn","state":"观察中","body":"<b>可能驱动：</b>今日未发现足以解释股价波动的明确公司级重大信息，暂归因于板块与市场风格因素。<br><b>证据：</b>暂无可直接对应的公司公告或业绩类公开信息。<br><b>影响判断：</b>基本面无新增变量，重点跟踪火电盈利与区域用电需求。<br><b>明日关注：</b>电力板块强弱、煤价走势及成交量变化。"}],"shortTerm":[{"name":"海思科","state":"偏强","text":"核心创新药销售、后续授权里程碑。"},{"name":"长川科技","state":"偏强","text":"半导体设备板块、成交量和高位波动。"},{"name":"路维光电","state":"震荡偏强","text":"订单、产能利用率及OLED客户验证。"},{"name":"电投能源","state":"偏强","text":"铝价、煤价、电价及板块相对强弱。"},{"name":"广电计量","state":"稳健偏强","text":"订单、利润率和集成电路测试景气。"},{"name":"江丰电子","state":"偏强","text":"扣非利润、靶材放量和半导体资本开支。"},{"name":"奥比中光","state":"高弹性","text":"机器人/AI板块、订单和H股筹划进展。"},{"name":"建投能源","state":"待观察","text":"电力板块强弱、煤价与区域用电需求。"}]};
+var FALLBACK_REVIEW_BODY='<b>可能驱动：</b>今日未发现足以解释股价异动的明确公司级重大信息，暂无法确认具体驱动。<br><b>影响判断：</b>以公司公告与权威新闻为准，勿凭猜测外推。<br><b>明日关注：</b>公司公告、行业动态及成交量变化。';
+var FALLBACK_SHORT='暂无针对性观察变量，建议关注公司公告与所在板块动向。';
+
+function loadState(){
+  try{
+    var raw=localStorage.getItem(LS_KEY);
+    if(raw){
+      var s=JSON.parse(raw);
+      if(s&&Array.isArray(s.holdings)){
+        s.ver=DEFAULT_STATE.ver;
+        s.title=s.title||DEFAULT_STATE.title;
+        return s;
+      }
+    }
+  }catch(e){}
+  return JSON.parse(JSON.stringify(DEFAULT_STATE));
+}
+function saveState(){ try{ localStorage.setItem(LS_KEY,JSON.stringify(state)); }catch(e){} }
+
+var state=loadState();
+var quotes={};          /* code -> {name,price,prev,pct,time} */
+var lastUpdate=null;
+var refreshing=false;
+
+/* ================= 行情抓取 ================= */
+function parseText(text){
+  var re=/v_(\w+)="([^"]*)"/g,m;
+  while((m=re.exec(text))){
+    var f=m[2].split('~');
+    if(f.length<33) continue;
+    var price=parseFloat(f[3]),prev=parseFloat(f[4]),pct=parseFloat(f[32]);
+    if(!isFinite(price)) continue;
+    quotes[m[1]]={name:f[1],price:price,prev:isFinite(prev)?prev:null,pct:isFinite(pct)?pct:null,time:f[30]||''};
+  }
+}
+function fetchByScript(codes){
+  return new Promise(function(resolve){
+    var s=document.createElement('script'); s.charset='gbk';
+    var done=false;
+    function fin(ok){ if(done)return; done=true; clearTimeout(t); if(s.parentNode)s.parentNode.removeChild(s); resolve(ok); }
+    var t=setTimeout(function(){fin(false)},8000);
+    s.onload=function(){ codes.forEach(function(c){ var raw=window['v_'+c]; if(raw) parseText('v_'+c+'="'+raw+'"'); }); fin(true); };
+    s.onerror=function(){ fin(false); };
+    s.src='https://qt.gtimg.cn/q='+codes.join(',')+'&t='+Date.now();
+    document.head.appendChild(s);
+  });
+}
+function fetchQuotes(codes){
+  if(!codes.length) return Promise.resolve(true);
+  var url='https://qt.gtimg.cn/q='+codes.join(',')+'&t='+Date.now();
+  if(typeof fetch==='function'){
+    return fetch(url).then(function(r){ return r.arrayBuffer(); }).then(function(buf){
+      parseText(new TextDecoder('gbk').decode(buf)); return true;
+    }).catch(function(){ return fetchByScript(codes); });
+  }
+  return fetchByScript(codes);
+}
+
+/* ================= 格式化 ================= */
+function fmtWan(x){ return x.toFixed(2)+'万元'; }
+/* 仅用于成本总额和初始投资额：按万元四舍五入为整数后，再显示两位小数。 */
+function fmtRoundedWan(x){ return Math.round(x).toFixed(2)+'万元'; }
+function fmtSignWan(x){ return (x>=0?'+':'')+x.toFixed(2)+'万元'; }
+function fmtPct(x){ return (x>=0?'+':'')+x.toFixed(2)+'%'; }
+function cls(x){ return x>0?'up':(x<0?'down':'flat'); }
+function fmtCode(c){ return (c.slice(0,2)+'.'+c.slice(2)).toUpperCase(); }
+function fmtTime(t){
+  if(!t||t.length<14) return t||'--';
+  return t.slice(0,4)+'-'+t.slice(4,6)+'-'+t.slice(6,8)+' '+t.slice(8,10)+':'+t.slice(10,12)+':'+t.slice(12,14);
+}
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+/* ================= 计算 ================= */
+function computeRows(){
+  return state.holdings.map(function(h){
+    var q=quotes[h.code]||null;
+    var price=q?q.price:null;
+    var cost=h.shares*h.avg/1e4;
+    var mv=price!=null?h.shares*price/1e4:null;
+    var dayPct=q?q.pct:null;
+    var dayPnl=(q&&q.prev!=null)?h.shares*(q.price-q.prev)/1e4:null;
+    return {h:h,q:q,price:price,cost:cost,mv:mv,dayPct:dayPct,dayPnl:dayPnl,
+            pnl:mv!=null?mv-cost:null,pnlPct:mv!=null?(mv-cost)/cost*100:null};
+  });
+}
+
+/* ================= 渲染 ================= */
+function renderPie(rows){
+  var data=rows.filter(function(r){return r.mv!=null;}).sort(function(a,b){return b.mv-a.mv;});
+  var total=data.reduce(function(s,r){return s+r.mv;},0);
+  var svg=document.getElementById('donut'),legend=document.getElementById('legend');
+  if(!total){ svg.innerHTML=''; legend.innerHTML=''; return; }
+  var R=52,C=2*Math.PI*R,cum=0,html='';
+  data.forEach(function(r,i){
+    var frac=r.mv/total;
+    var gap=Math.min(2.5,frac*C*0.25);
+    var len=Math.max(frac*C-gap,0.6);
+    html+='<circle cx="75" cy="75" r="'+R+'" fill="none" stroke="'+PALETTE[i%PALETTE.length]+'" stroke-width="27"'+
+          ' stroke-dasharray="'+len+' '+(C-len)+'" stroke-dashoffset="'+(-(cum*C+gap/2)).toFixed(2)+'"'+
+          ' transform="rotate(-90 75 75)"/>';
+    cum+=frac;
+  });
+  svg.innerHTML=html;
+  legend.innerHTML=data.map(function(r,i){
+    return '<li><span class="dot" style="background:'+PALETTE[i%PALETTE.length]+'"></span>'+esc(r.h.name)+' '+(r.mv/total*100).toFixed(1)+'%</li>';
+  }).join('');
+}
+function row(k,v,c){ return '<div class="s-row"><div class="k">'+k+'</div><div class="v '+(c||'')+'">'+v+'</div></div>'; }
+function renderCards(rows){
+  var el=document.getElementById('cards');
+  if(!rows.length){ el.innerHTML='<div class="empty">暂无持仓，点击右上角齿轮添加</div>'; return; }
+  el.innerHTML=rows.map(function(r){
+    var h=r.h,q=r.q;
+    var c=r.dayPct!=null?cls(r.dayPct):'flat';
+    var html='<div class="s-card">';
+    html+='<div class="s-head"><div class="s-name">'+esc(h.name)+'<span class="s-code">'+fmtCode(h.code)+'</span></div>'+
+          '<div class="s-price"><b>'+(r.price!=null?r.price.toFixed(2)+'元':'--')+'</b>'+
+          '<span class="'+c+'">'+(r.dayPct!=null?fmtPct(r.dayPct):'--')+'</span></div></div>';
+    html+=row('成本总额',fmtRoundedWan(r.cost));
+    html+=row('当前市值',r.mv!=null?fmtWan(r.mv):'--');
+    html+=row('持仓数量',String(h.shares));
+    html+=row('买入均价',h.avg.toFixed(2)+'元');
+    html+=row('当日涨跌幅',r.dayPct!=null?fmtPct(r.dayPct):'--',c);
+    html+=row('当日浮动盈亏',r.dayPnl!=null?fmtSignWan(r.dayPnl):'--',r.dayPnl!=null?cls(r.dayPnl):'flat');
+    html+=row('总盈亏情况',r.pnl!=null?fmtSignWan(r.pnl):'--',r.pnl!=null?cls(r.pnl):'flat');
+    html+=row('浮盈亏/浮亏比例',r.pnlPct!=null?fmtPct(r.pnlPct):'--',r.pnlPct!=null?cls(r.pnlPct):'flat');
+    html+='<div class="s-foot">'+(q?('行情时间 · '+fmtTime(q.time)):'行情获取失败，请点击刷新')+'</div>';
+    html+='</div>';
+    return html;
+  }).join('');
+}
+function setV(id,txt,c){ var el=document.getElementById(id); el.textContent=txt; el.className=el.className.replace(/\b(up|down|flat)\b/g,'').trim()+' '+(c||''); }
+function renderSummary(rows){
+  var tmv=0,tcost=0,tday=0,has=false;
+  rows.forEach(function(r){ if(r.mv!=null){ has=true; tmv+=r.mv; tcost+=r.cost; tday+=(r.dayPnl||0); } });
+  if(!has){ ['vTotal','vCost','vPnl','vGrowth','vDayPct','vDayPnl'].forEach(function(id){setV(id,'--','flat');}); return; }
+  var pnl=tmv-tcost;
+  setV('vTotal',fmtWan(tmv),'');
+  setV('vCost',fmtRoundedWan(tcost),'');
+  setV('vPnl',fmtSignWan(pnl),cls(pnl));
+  setV('vGrowth',fmtPct(tcost?pnl/tcost*100:0),cls(pnl));
+  var prevMv=tmv-tday;
+  setV('vDayPct',fmtPct(prevMv?tday/prevMv*100:0),cls(tday));
+  setV('vDayPnl',fmtSignWan(tday),cls(tday));
+}
+/* AI 驾驶舱渲染：今日资讯/收盘复盘/短线观察均由 DAILY + state.holdings 生成 */
+function renderAI(rows){
+  if(typeof DAILY!=='object'||!DAILY) return;
+  var isDemo=DAILY.source==='static-demo';
+  var sub=document.getElementById('newsSub');
+  if(sub) sub.textContent='AI筛选 · '+(isDemo?'测试版':(DAILY.date||''));
+  var rsub=document.getElementById('reviewSub');
+  if(rsub) rsub.textContent='当前持仓 · '+(isDemo?'测试版':(DAILY.date||''));
+  /* 今日资讯 */
+  var nEl=document.getElementById('aiNews');
+  if(nEl){
+    nEl.innerHTML=(DAILY.morning||[]).map(function(n){
+      return '<div class="ai-item"><div class="ai-title"><span class="ai-badge '+esc(n.cls)+'">'+esc(n.tag)+'</span>'+esc(n.title)+'</div>'+
+             '<div class="ai-text">'+esc(n.text)+'</div><div class="ai-source">'+esc(n.source)+'</div></div>';
+    }).join('')||'<div class="ai-item"><div class="ai-title">今日暂无与持仓相关的重点资讯</div></div>';
+  }
+  /* 收盘复盘：逐只持仓，涨跌幅取实时行情，驱动分析来自 DAILY（缺失时如实提示） */
+  var byName={}; rows.forEach(function(r){ byName[r.h.name]=r; });
+  var revMap={}; (DAILY.review||[]).forEach(function(x){ revMap[x.name]=x; });
+  var rEl=document.getElementById('aiReview');
+  if(rEl){
+    rEl.innerHTML=state.holdings.map(function(h){
+      var r=byName[h.name]||null,d=revMap[h.name]||null;
+      var pct=(r&&r.dayPct!=null)?fmtPct(r.dayPct):'—';
+      var pc=(r&&r.dayPct!=null)?cls(r.dayPct):'flat';
+      return '<div class="ai-row"><div class="ai-head"><span class="ai-name">'+esc(h.name)+'</span>'+
+             '<span class="ai-pct '+pc+'">'+pct+'</span></div><div class="ai-reason">'+
+             (d?'<span class="ai-badge '+esc(d.cls)+'">'+esc(d.state)+'</span>'+d.body
+               :'<span class="ai-badge">待研判</span>'+FALLBACK_REVIEW_BODY)+
+             '</div></div>';
+    }).join('');
+  }
+  /* 短线观察 */
+  var stMap={}; (DAILY.shortTerm||[]).forEach(function(x){ stMap[x.name]=x; });
+  var sEl=document.getElementById('aiShort');
+  if(sEl){
+    sEl.innerHTML=state.holdings.map(function(h){
+      var d=stMap[h.name]||null;
+      return '<div class="ai-ob"><b>'+esc(h.name)+' · '+esc(d?d.state:'待观察')+'</b><span>'+esc(d?d.text:FALLBACK_SHORT)+'</span></div>';
+    }).join('');
+  }
+  var fEl=document.getElementById('aiFoot');
+  if(fEl) fEl.textContent=isDemo
+    ? 'AI研判，仅供投研参考，不构成交易建议。涨跌为实时行情数据；驱动与观察分析当前为测试版内容，云端自动生成内容上线后将在此展示并保留来源。'
+    : 'AI研判，仅供投研参考，不构成交易建议。涨跌为实时行情数据；以上资讯与分析由云端定时任务于 '+(DAILY.date||'')+' 自动生成，来源见各条标注。';
+}
+function renderAll(){
+  document.getElementById('pageTitle').textContent=state.title;
+  document.title=state.title;
+  var rows=computeRows();
+  renderPie(rows);
+  renderSummary(rows);
+  renderCards(rows);
+  renderAI(rows);
+}
+function updateFoot(ok){
+  var el=document.getElementById('foot');
+  var t=lastUpdate?('最后更新 '+lastUpdate.toLocaleTimeString('zh-CN',{hour12:false})):'尚未获取行情';
+  el.textContent='数据来源：腾讯财经 · '+t+' · 每'+(REFRESH_MS/1000)+'秒自动刷新'+(ok===false?'（本次获取失败）':'');
+}
+
+/* ================= 刷新 ================= */
+function refresh(){
+  if(refreshing) return;
+  refreshing=true;
+  var btn=document.getElementById('refreshBtn');
+  btn.classList.add('spinning');
+  document.getElementById('refreshTxt').textContent='刷新中…';
+  fetchQuotes(state.holdings.map(function(h){return h.code;})).then(function(ok){
+    if(ok) lastUpdate=new Date();
+    renderAll(); updateFoot(ok);
+  }).then(function(){
+    refreshing=false;
+    btn.classList.remove('spinning');
+    document.getElementById('refreshTxt').textContent='点击刷新';
+  });
+}
+
+/* ================= 设置面板 ================= */
+var mask=document.getElementById('mask'),sheet=document.getElementById('sheet');
+function openSheet(){ renderSheet(); mask.classList.add('show'); sheet.classList.add('show'); }
+function closeSheet(){ mask.classList.remove('show'); sheet.classList.remove('show'); }
+function renderSheet(){
+  document.getElementById('setTitle').value=state.title;
+  var el=document.getElementById('editList');
+  if(!state.holdings.length){ el.innerHTML='<div class="empty">暂无持仓</div>'; return; }
+  el.innerHTML=state.holdings.map(function(h,i){
+    return '<div class="e-row" data-i="'+i+'">'+
+      '<div class="e-top"><div><span class="e-name">'+esc(h.name)+'</span><span class="e-code">'+fmtCode(h.code)+'</span></div>'+
+      '<button class="e-del" data-del="'+i+'">删除</button></div>'+
+      '<div class="e-fields">'+
+      '<label>持仓数量<input type="number" data-i="'+i+'" data-k="shares" value="'+h.shares+'"></label>'+
+      '<label>买入均价(元)<input type="number" step="0.01" data-i="'+i+'" data-k="avg" value="'+h.avg+'"></label>'+
+      '</div></div>';
+  }).join('');
+}
+function toast(msg){
+  var t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  clearTimeout(t._h); t._h=setTimeout(function(){t.classList.remove('show');},2200);
+}
+function normCode(input){
+  var s=String(input).trim().toLowerCase().replace(/\s/g,'');
+  if(/^(sh|sz|bj)\d{6}$/.test(s)) return s;
+  if(/^\d{6}$/.test(s)){
+    if(/^6/.test(s)) return 'sh'+s;
+    if(/^[03]/.test(s)) return 'sz'+s;
+    if(/^[48]/.test(s)) return 'bj'+s;
+  }
+  return null;
+}
+
+/* ================= 事件 ================= */
+var SETTINGS_PWD='20251226';
+var pwdMask=document.getElementById('pwdMask'),pwdBox=document.getElementById('pwdBox'),pwdInput=document.getElementById('pwdInput');
+function openPwd(){
+  pwdInput.value='';
+  pwdMask.classList.add('show'); pwdBox.classList.add('show');
+  setTimeout(function(){ pwdInput.focus(); },180);
+}
+function closePwd(){ pwdMask.classList.remove('show'); pwdBox.classList.remove('show'); }
+function tryPwd(){
+  if(pwdInput.value===SETTINGS_PWD){ closePwd(); openSheet(); }
+  else{ toast('密码错误，无法修改设置'); pwdInput.value=''; pwdInput.focus(); }
+}
+document.getElementById('gearBtn').addEventListener('click',openPwd);
+pwdMask.addEventListener('click',closePwd);
+document.getElementById('pwdCancel').addEventListener('click',closePwd);
+document.getElementById('pwdOk').addEventListener('click',tryPwd);
+pwdInput.addEventListener('keydown',function(e){ if(e.key==='Enter') tryPwd(); });
+document.getElementById('closeBtn').addEventListener('click',closeSheet);
+mask.addEventListener('click',closeSheet);
+document.getElementById('refreshBtn').addEventListener('click',refresh);
+
+document.getElementById('editList').addEventListener('click',function(e){
+  var del=e.target.getAttribute&&e.target.getAttribute('data-del');
+  if(del!=null){
+    var i=+del,h=state.holdings[i];
+    if(confirm('确定删除「'+h.name+'」吗？')){ state.holdings.splice(i,1); saveState(); renderSheet(); renderAll(); }
+  }
+});
+document.getElementById('addBtn').addEventListener('click',function(){
+  var code=normCode(document.getElementById('addCode').value);
+  var shares=parseFloat(document.getElementById('addShares').value);
+  var avg=parseFloat(document.getElementById('addAvg').value);
+  if(!code){ toast('股票代码格式不正确（A股6位数字）'); return; }
+  if(!(shares>0)||!(avg>=0)){ toast('请填写有效的持仓数量和买入均价'); return; }
+  if(state.holdings.some(function(h){return h.code===code;})){ toast('该股票已在持仓中'); return; }
+  state.holdings.push({code:code,name:'新增股票 '+code.slice(2),shares:Math.round(shares),avg:avg});
+  /* 先立即保存并渲染，避免行情接口尚未返回时新增股票“看不见” */
+  saveState();
+  renderSheet();
+  renderAll();
+  document.getElementById('addCode').value='';
+  document.getElementById('addShares').value='';
+  document.getElementById('addAvg').value='';
+  toast('已添加，正在获取股票名称和行情…');
+  fetchQuotes([code]).then(function(){
+    var q=quotes[code];
+    var item=state.holdings.filter(function(h){return h.code===code;})[0];
+    if(item&&q){ item.name=q.name||item.name; saveState(); }
+    renderSheet(); renderAll();
+    toast('已保存'+((q&&q.name)?'「'+q.name+'」':'，可继续点击“保存并刷新”')); 
+  });
+});
+function collectSheet(){
+  state.title=document.getElementById('setTitle').value.trim()||'持仓项目收益总览';
+  var inputs=document.querySelectorAll('#editList input');
+  for(var i=0;i<inputs.length;i++){
+    var inp=inputs[i],idx=+inp.getAttribute('data-i'),k=inp.getAttribute('data-k');
+    var h=state.holdings[idx]; if(!h) continue;
+    var v=parseFloat(inp.value);
+    if(k==='shares'&&v>0) h.shares=Math.round(v);
+    if(k==='avg'&&v>=0) h.avg=v;
+  }
+}
+document.getElementById('saveBtn').addEventListener('click',function(){
+  collectSheet();
+  saveState(); closeSheet(); refresh();
+  toast('已保存');
+});
+function exportShare(){
+  var exp={ver:Date.now(),title:state.title,holdings:state.holdings};
+  var src='<!DOCTYPE html>\n'+document.documentElement.outerHTML;
+  var newSrc=src.replace(/var DEFAULT_STATE=[\s\S]*?(?=var PALETTE)/,'var DEFAULT_STATE='+JSON.stringify(exp)+';\n');
+  newSrc=newSrc.replace(/var DAILY=[\s\S]*?(?=var FALLBACK_REVIEW_BODY)/,function(){ return 'var DAILY='+JSON.stringify(DAILY)+';\n'; });
+  if(newSrc===src){ toast('生成失败，请重试'); return; }
+  var blob=new Blob([newSrc],{type:'text/html;charset=utf-8'});
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='持仓收益总览.html';
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(function(){ URL.revokeObjectURL(a.href); if(a.parentNode)a.parentNode.removeChild(a); },600);
+  toast('已生成含当前持仓的新文件，把它发给同事即可');
+}
+document.getElementById('shareBtn').addEventListener('click',function(){
+  collectSheet();
+  exportShare();
+});
+
+/* ================= 云端每日内容（读取失败自动使用内置内容兜底） ================= */
+function loadCloudDaily(){
+  var candidates=['daily.json','/api/daily'];
+  tryFetch(0);
+  function tryFetch(i){
+    if(i>=candidates.length) return;
+    fetch(candidates[i]+'?t='+Date.now(),{cache:'no-store'}).then(function(r){ return r.ok?r.json():null; }).then(function(j){
+      var p=null;
+      if(j&&j.payload&&j.source==='cloud') p=j.payload;              /* /api/daily 动态接口形态 */
+      else if(j&&(j.morning||j.review||j.shortTerm)) p=j;            /* daily.json 静态形态 */
+      if(p){ applyCloud(p); return; }
+      tryFetch(i+1);
+    }).catch(function(){ tryFetch(i+1); });
+  }
+  function applyCloud(p){
+    var changed=false;
+    ['morning','review','shortTerm'].forEach(function(k){ if(Array.isArray(p[k])&&p[k].length){ DAILY[k]=p[k]; changed=true; } });
+    if(!changed) return;
+    DAILY.source='cloud'; DAILY.date=p.date||DAILY.date;
+    renderAll();
+  }
+}
+
+/* ================= 启动 ================= */
+renderAll();
+refresh();
+setInterval(refresh,REFRESH_MS);
+loadCloudDaily();
+})();
+</script>
+
+<!-- AI 模块由 DAILY JSON 数据结构驱动渲染（测试版为内联静态数据；正式版将由云端定时任务生成的 daily.json 提供） -->
+  <section id="ai-dashboard"><div class="ai-wrap"><div class="ai-grid"><div class="ai-card full"><h3>今日资讯 <span class="ai-sub" id="newsSub">AI筛选 · 测试版</span></h3><div class="ai-list" id="aiNews"></div></div><div class="ai-card full"><h3>收盘复盘 <span class="ai-sub" id="reviewSub">当前持仓 · 测试版</span></h3><div class="ai-review" id="aiReview"></div></div><div class="ai-card full"><h3>短线观察 <span class="ai-sub">AI研判 · 明日关注</span></h3><div class="ai-observe" id="aiShort"></div><div class="ai-foot" id="aiFoot"></div></div></div></div></section>
+
+</body>
+</html>
