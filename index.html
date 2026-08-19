@@ -614,10 +614,27 @@ function loadCloudDaily(){
   }
 }
 
+/* ================= 云端持仓配置（holdings.json 存在时覆盖内置持仓） ================= */
+function loadCloudHoldings(){
+  try{
+    fetch('holdings.json?t='+Date.now(),{cache:'no-store'}).then(function(r){ return r.ok?r.json():null; }).then(function(j){
+      if(!j||!Array.isArray(j.holdings)||!j.holdings.length) return;
+      var list=j.holdings.filter(function(h){ return h&&h.code&&h.name&&h.shares>0&&h.avg>=0; });
+      if(!list.length) return;
+      if(typeof j.title==='string'&&j.title) state.title=j.title;
+      state.holdings=list;
+      saveState();
+      renderAll();
+      refresh();
+    }).catch(function(){});
+  }catch(e){}
+}
+
 /* ================= 启动 ================= */
 renderAll();
 refresh();
 setInterval(refresh,REFRESH_MS);
+loadCloudHoldings();
 loadCloudDaily();
 })();
 </script>
