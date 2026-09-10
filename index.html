@@ -148,7 +148,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans G
 .pwd-ok{background:#111;color:#fff}
 
 /* ===== AI 投研驾驶舱 v2 ===== */
-.ai-wrap{max-width:var(--page-max);margin:18px auto 28px;padding:0 12px;box-sizing:border-box}.ai-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.ai-card{background:#fff;border:1px solid #e8ebef;border-radius:14px;padding:16px;box-shadow:0 3px 12px rgba(20,30,55,.035)}.ai-card.full{grid-column:1/-1}.ai-card h3{font-size:17px;color:#1f2937;margin:0 0 4px}.ai-sub{font-size:11px;color:#9aa3b2;font-weight:400;margin-left:7px}.ai-list{display:grid;gap:9px;margin-top:11px}.ai-item{padding:10px 11px;background:#f8fafc;border-radius:10px}.ai-title{font-size:13px;font-weight:700;color:#293548}.ai-text{font-size:12px;line-height:1.55;color:#5c6879;margin-top:5px}.ai-source{font-size:10px;color:#a0a8b5;margin-top:5px}.ai-review{display:grid;gap:8px;margin-top:11px}.ai-row{border:1px solid #edf0f4;border-radius:10px;padding:10px}.ai-head{display:flex;justify-content:space-between;align-items:center}.ai-name{font-weight:700;color:#293548;font-size:13px}.ai-pct{font-weight:700;font-size:13px}.up{color:#d34a42}.down{color:#15916a}.flat{color:#718096}.ai-reason{font-size:12px;line-height:1.55;color:#5c6879;margin-top:5px}.ai-observe{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-top:11px}.ai-ob{padding:11px;border-radius:10px;background:#f8fafc}.ai-ob b{display:block;font-size:13px;margin-bottom:5px}.ai-ob span{font-size:12px;color:#5c6879;line-height:1.5}.ai-badge{display:inline-block;padding:2px 7px;border-radius:99px;background:#eef2f7;color:#667085;font-size:10px;margin-right:5px}.ai-badge.good{background:#edf8f1;color:#26734d}.ai-badge.warn{background:#fff6e6;color:#99651e}.ai-badge.hot{background:#fff0ef;color:#c3433a}.ai-foot{margin-top:10px;font-size:10px;color:#9aa3b2;line-height:1.5}@media(max-width:800px){.ai-grid{grid-template-columns:1fr}.ai-card.full{grid-column:auto}.ai-observe{grid-template-columns:1fr}}
+.ai-wrap{max-width:var(--page-max);margin:18px auto 28px;padding:0 12px;box-sizing:border-box}.ai-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px}.ai-card{background:#fff;border:1px solid #e8ebef;border-radius:14px;padding:16px;box-shadow:0 3px 12px rgba(20,30,55,.035)}.ai-card.full{grid-column:1/-1}.ai-card h3{font-size:17px;color:#1f2937;margin:0 0 4px}.ai-sub{font-size:11px;color:#9aa3b2;font-weight:400;margin-left:7px}.ai-list{display:grid;gap:9px;margin-top:11px}.ai-item{padding:10px 11px;background:#f8fafc;border-radius:10px}.ai-title{font-size:13px;font-weight:700;color:#293548}.ai-text{font-size:12px;line-height:1.55;color:#5c6879;margin-top:5px}.ai-source{font-size:10px;color:#a0a8b5;margin-top:5px}.ai-review{display:grid;gap:8px;margin-top:11px}.ai-row{border:1px solid #edf0f4;border-radius:10px;padding:10px}.ai-head{display:flex;justify-content:space-between;align-items:center}.ai-name{font-weight:700;color:#293548;font-size:13px}.ai-pct{font-weight:700;font-size:13px}.up{color:#d34a42}.down{color:#15916a}.flat{color:#718096}.ai-reason{font-size:12px;line-height:1.55;color:#5c6879;margin-top:5px}.ai-observe{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:11px}.ai-ob{padding:11px;border-radius:10px;background:#f8fafc}.ai-ob b{display:block;font-size:13px;margin-bottom:5px}.ai-ob span{font-size:12px;color:#5c6879;line-height:1.5}.ai-badge{display:inline-block;padding:2px 7px;border-radius:99px;background:#eef2f7;color:#667085;font-size:10px;margin-right:5px}.ai-badge.good{background:#edf8f1;color:#26734d}.ai-badge.warn{background:#fff6e6;color:#99651e}.ai-badge.hot{background:#fff0ef;color:#c3433a}.ai-foot{margin-top:10px;font-size:10px;color:#9aa3b2;line-height:1.5}@media(max-width:800px){.ai-grid{grid-template-columns:minmax(0,1fr)}.ai-card.full{grid-column:auto}.ai-observe{grid-template-columns:minmax(0,1fr)}}
+.ai-wrap{overflow-wrap:break-word}.ai-title,.ai-text,.ai-reason,.ai-source,.ai-ob span{overflow-wrap:anywhere}
+.ai-reason a,.ai-source a{color:#3a6bc7;text-decoration:none;word-break:break-all}
 
 </style>
 </head>
@@ -393,6 +395,15 @@ function renderSummary(rows){
   setV('vDayPct',fmtPct(prevMv?tday/prevMv*100:0),cls(tday));
   setV('vDayPnl',fmtSignWan(tday),cls(tday));
 }
+/* body 清洗：转义全部HTML后仅还原<b>/<br>，并把URL转为可点链接（防长链撑破布局） */
+function linkify(t){
+  return t.replace(/(https?:\/\/[^\s<>"']+)/g,function(u){
+    return '<a href="'+u+'" target="_blank" rel="noopener">'+u+'</a>';
+  });
+}
+function safeBody(raw){
+  return linkify(esc(raw).replace(/&lt;b&gt;/gi,'<b>').replace(/&lt;\/b&gt;/gi,'</b>').replace(/&lt;br\s*\/?&gt;/gi,'<br>'));
+}
 /* AI 驾驶舱渲染：今日资讯/收盘复盘/短线观察均由 DAILY + state.holdings 生成 */
 function renderAI(rows){
   if(typeof DAILY!=='object'||!DAILY) return;
@@ -406,7 +417,7 @@ function renderAI(rows){
   if(nEl){
     nEl.innerHTML=(DAILY.morning||[]).map(function(n){
       return '<div class="ai-item"><div class="ai-title"><span class="ai-badge '+esc(n.cls)+'">'+esc(n.tag)+'</span>'+esc(n.title)+'</div>'+
-             '<div class="ai-text">'+esc(n.text)+'</div><div class="ai-source">'+esc(n.source)+'</div></div>';
+             '<div class="ai-text">'+linkify(esc(n.text))+'</div><div class="ai-source">'+linkify(esc(n.source))+'</div></div>';
     }).join('')||'<div class="ai-item"><div class="ai-title">今日暂无与持仓相关的重点资讯</div></div>';
   }
   /* 收盘复盘：逐只持仓，涨跌幅取实时行情，驱动分析来自 DAILY（缺失时如实提示） */
@@ -420,7 +431,7 @@ function renderAI(rows){
       var pc=(r&&r.dayPct!=null)?cls(r.dayPct):'flat';
       return '<div class="ai-row"><div class="ai-head"><span class="ai-name">'+esc(h.name)+'</span>'+
              '<span class="ai-pct '+pc+'">'+pct+'</span></div><div class="ai-reason">'+
-             (d?'<span class="ai-badge '+esc(d.cls)+'">'+esc(d.state)+'</span>'+d.body
+             (d?'<span class="ai-badge '+esc(d.cls)+'">'+esc(d.state)+'</span>'+safeBody(d.body)
                :'<span class="ai-badge">待研判</span>'+FALLBACK_REVIEW_BODY)+
              '</div></div>';
     }).join('');
