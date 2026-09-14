@@ -96,6 +96,20 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans G
 /* ---------- footer ---------- */
 .foot{font-size:10px;color:#b7bbc0;text-align:center;margin-top:18px;line-height:1.7}
 .verline{font-size:10px;color:#c3c7cc;text-align:center;margin-top:5px;line-height:1.7;padding-bottom:2px}
+/* ---------- 长图生成 ---------- */
+.shot-btn{position:fixed;right:14px;bottom:calc(16px + env(safe-area-inset-bottom));z-index:35;display:flex;align-items:center;gap:5px;background:#111;color:#fff;border:none;border-radius:999px;padding:10px 15px;font-size:12px;font-weight:600;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.28);transition:transform .15s}
+.shot-btn:active{transform:scale(.94)}
+.shot-btn:disabled{opacity:.55}
+.shot-btn svg{width:15px;height:15px;fill:#fff}
+.shot-overlay{position:fixed;inset:0;z-index:95;background:rgba(12,13,15,.94);display:none;flex-direction:column}
+.shot-overlay.show{display:flex}
+.shot-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:calc(10px + env(safe-area-inset-top)) 12px 10px;color:#e6e6e6;font-size:12px;flex:none;line-height:1.5}
+.shot-bar button{background:rgba(255,255,255,.16);border:none;color:#fff;width:30px;height:30px;border-radius:50%;font-size:15px;cursor:pointer;flex:none;line-height:1}
+.shot-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 10px}
+.shot-scroll img{display:block;width:100%;border-radius:8px}
+.shot-actions{flex:none;padding:10px 16px calc(12px + env(safe-area-inset-bottom));text-align:center}
+.shot-actions a{display:inline-block;background:#fff;color:#111;font-size:13px;font-weight:600;border-radius:10px;padding:11px 26px;text-decoration:none;cursor:pointer}
+.shot-actions a:active{opacity:.8}
 
 /* ---------- settings sheet ---------- */
 .mask{position:fixed;inset:0;background:rgba(0,0,0,.45);opacity:0;pointer-events:none;transition:opacity .25s;z-index:40}
@@ -199,6 +213,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans G
   <div class="verline">版本号：19.5 | 版本维护：马嘶邈</div>
 </div>
 
+<button class="shot-btn" id="shotBtn" aria-label="生成整页长图"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3L7.17 5H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-3.17L15 3H9zm3 5a5 5 0 1 1 0 10 5 5 0 0 1 0-10zm0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"/></svg><span id="shotTxt">长图</span></button>
+<div class="shot-overlay" id="shotOverlay">
+  <div class="shot-bar"><span id="shotTip"></span><button id="shotClose" aria-label="关闭">✕</button></div>
+  <div class="shot-scroll"><img id="shotImg" alt="页面长图"></div>
+  <div class="shot-actions"><a id="shotDl" href="javascript:void(0)">下载长图（JPG）</a></div>
+</div>
 <div class="mask" id="mask"></div>
 <div class="sheet" id="sheet">
   <div class="sheet-head">
@@ -652,6 +672,60 @@ refresh();
 setInterval(refresh,REFRESH_MS);
 loadCloudHoldings();
 loadCloudDaily();
+})();
+</script>
+<!-- 长图生成：html2canvas 同源按需加载，不影响首屏速度 -->
+<script>
+(function(){
+'use strict';
+var btn=document.getElementById('shotBtn'),txt=document.getElementById('shotTxt');
+var overlay=document.getElementById('shotOverlay'),img=document.getElementById('shotImg');
+var dl=document.getElementById('shotDl'),tip=document.getElementById('shotTip');
+var h2cState=0; /* 0未加载 1加载中 2就绪 3失败 */
+function isTouch(){ return ('ontouchstart' in window)||navigator.maxTouchPoints>0; }
+function loadH2C(cb){
+  if(window.html2canvas){ cb(true); return; }
+  if(h2cState===1){ setTimeout(function(){ loadH2C(cb); },250); return; }
+  if(h2cState===3){ cb(false); return; }
+  h2cState=1;
+  var s=document.createElement('script');
+  s.src='html2canvas.min.js';
+  s.onload=function(){ h2cState=2; cb(true); };
+  s.onerror=function(){ h2cState=3; cb(false); };
+  document.head.appendChild(s);
+}
+btn.addEventListener('click',function(){
+  if(btn.disabled) return;
+  btn.disabled=true; txt.textContent='生成中…';
+  tip.textContent=isTouch()?'长按下方图片 → 存储图像 或 发送给朋友':'右键图片另存为，或点击底部下载按钮';
+  loadH2C(function(ok){
+    if(!ok){ txt.textContent='长图'; btn.disabled=false; alert('截图组件加载失败，请检查网络后重试'); return; }
+    var app=document.querySelector('.app');
+    var w=app.scrollWidth||document.documentElement.clientWidth;
+    var h=app.scrollHeight||document.documentElement.scrollHeight;
+    var scale=Math.min(2,Math.sqrt(12000000/(w*h)),14000/h);
+    if(scale<0.6) scale=0.6;
+    window.scrollTo(0,0);
+    window.html2canvas(app,{
+      scale:scale, backgroundColor:'#f4f5f7', useCORS:true, logging:false,
+      scrollX:0, scrollY:0, windowWidth:w, windowHeight:h
+    }).then(function(cv){
+      txt.textContent='长图'; btn.disabled=false;
+      try{
+        var url=cv.toDataURL('image/jpeg',0.92);
+        img.src=url; dl.href=url;
+        var d=new Date();
+        dl.download='定增业务工具_'+d.getFullYear()+('0'+(d.getMonth()+1)).slice(-2)+('0'+d.getDate()).slice(-2)+'.jpg';
+        overlay.classList.add('show');
+      }catch(e){ alert('生成图片失败：'+e.message); }
+    }).catch(function(){
+      txt.textContent='长图'; btn.disabled=false;
+      alert('生成失败，请重试');
+    });
+  });
+});
+document.getElementById('shotClose').addEventListener('click',function(){ overlay.classList.remove('show'); });
+overlay.addEventListener('click',function(e){ if(e.target===overlay) overlay.classList.remove('show'); });
 })();
 </script>
 
