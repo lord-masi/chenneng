@@ -721,13 +721,17 @@ btn.addEventListener('click',function(){
         var ok=(cv.width>=ew*0.97)&&(cv.height>=eh*0.97);
         if(ok){
           try{
-            var strip=cv.getContext('2d',{willReadFrequently:true}).getImageData(12,0,8,cv.height).data;
-            var seen={},n=0;
-            for(var p=0;p<strip.length;p+=64){
-              var lum=(strip[p]*3+strip[p+1]*6+strip[p+2])>>4;
-              if(!seen[lum]){ seen[lum]=1; n++; }
+            var ctx2=cv.getContext('2d',{willReadFrequently:true});
+            var fr=[0.06,0.35,0.65,0.9],seen={},n=0;
+            for(var fi=0;fi<fr.length;fi++){
+              var y=Math.max(0,Math.round(cv.height*fr[fi])-3);
+              var rows=ctx2.getImageData(0,y,cv.width,6).data;
+              for(var p=0;p<rows.length;p+=16){
+                var lum=(rows[p]*3+rows[p+1]*6+rows[p+2])>>4;
+                if(!seen[lum]){ seen[lum]=1; n++; }
+              }
             }
-            if(n<25) ok=false;
+            if(n<30) ok=false;
           }catch(e){}
         }
         if(!ok){ tryOne(i+1); return; }
