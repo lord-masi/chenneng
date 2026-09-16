@@ -705,25 +705,43 @@ btn.addEventListener('click',function(){
     var app=document.querySelector('.app');
     var w=app.scrollWidth||document.documentElement.clientWidth;
     var h=app.scrollHeight||document.documentElement.scrollHeight;
-    var scale=Math.min(2,Math.sqrt(16000000/(w*h)),16000/h);
-    if(scale<0.75) scale=0.75;
+    var isMobile=/iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    var budget=isMobile?15.5e6:24e6;
+    var sMax=Math.min(2,Math.sqrt(budget/(w*h)));
+    var cands=[sMax,sMax*0.72,sMax*0.5];
     window.scrollTo(0,0);
-    window.html2canvas(app,{
-      scale:scale, backgroundColor:'#f4f5f7', useCORS:true, logging:false,
-      scrollX:0, scrollY:0, windowWidth:w, windowHeight:h
-    }).then(function(cv){
-      txt.textContent='长图'; btn.disabled=false;
-      try{
-        var url=cv.toDataURL('image/jpeg',0.92);
-        img.src=url; dl.href=url;
-        var d=new Date();
-        dl.download='定增业务工具_'+d.getFullYear()+('0'+(d.getMonth()+1)).slice(-2)+('0'+d.getDate()).slice(-2)+'.jpg';
-        overlay.classList.add('show');
-      }catch(e){ alert('生成图片失败：'+e.message); }
-    }).catch(function(){
-      txt.textContent='长图'; btn.disabled=false;
-      alert('生成失败，请重试');
-    });
+    function tryOne(i){
+      if(i>=cands.length){ txt.textContent='长图'; btn.disabled=false; alert('生成失败，请重试'); return; }
+      var scale=Math.max(0.8,cands[i]);
+      var ew=Math.round(w*scale), eh=Math.round(h*scale);
+      window.html2canvas(app,{
+        scale:scale, backgroundColor:'#f4f5f7', useCORS:true, logging:false,
+        scrollX:0, scrollY:0, windowWidth:w, windowHeight:h
+      }).then(function(cv){
+        var ok=(cv.width>=ew*0.97)&&(cv.height>=eh*0.97);
+        if(ok){
+          try{
+            var strip=cv.getContext('2d',{willReadFrequently:true}).getImageData(12,0,8,cv.height).data;
+            var seen={},n=0;
+            for(var p=0;p<strip.length;p+=64){
+              var lum=(strip[p]*3+strip[p+1]*6+strip[p+2])>>4;
+              if(!seen[lum]){ seen[lum]=1; n++; }
+            }
+            if(n<25) ok=false;
+          }catch(e){}
+        }
+        if(!ok){ tryOne(i+1); return; }
+        txt.textContent='长图'; btn.disabled=false;
+        try{
+          var url=cv.toDataURL('image/jpeg',0.92);
+          img.src=url; dl.href=url;
+          var d=new Date();
+          dl.download='定增业务工具_'+d.getFullYear()+('0'+(d.getMonth()+1)).slice(-2)+('0'+d.getDate()).slice(-2)+'.jpg';
+          overlay.classList.add('show');
+        }catch(e2){ tryOne(i+1); }
+      }).catch(function(){ tryOne(i+1); });
+    }
+    tryOne(0);
   });
 });
 document.getElementById('shotClose').addEventListener('click',function(){ overlay.classList.remove('show'); });
