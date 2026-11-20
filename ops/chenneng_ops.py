@@ -342,6 +342,31 @@ def cmd_verify(kind):
     return _verify(kind)
 
 
+def _push_alert_to_repo(msg):
+    """把告警写进仓库 ops/ALERT.md，云端任务失败时人可见（页面：/chenneng/ops/ALERT.md）"""
+    try:
+        path = "ops/ALERT.md"
+        body = ("# 定增驾驶舱 · 最近一次流水线告警\n\n"
+                "- 时间：%s（北京时间）\n"
+                "- 内容：%s\n\n"
+                "> 本文件由定时任务在检测失败时自动写入。看到此文件说明当时有一次发布未成功；\n"
+                "> 若内容是旧的、且页面数据正常，说明已自愈，可忽略。\n" % (now_bj(), msg))
+        sha = None
+        try:
+            cur = _req(API + path, token())
+            sha = cur.get("sha")
+        except Exception:
+            pass
+        payload = {"message": "流水线告警 %s" % today_bj(),
+                   "content": base64.b64encode(body.encode("utf-8")).decode()}
+        if sha:
+            payload["sha"] = sha
+        _req(API + path, token(), payload, method="PUT")
+        return True
+    except Exception:
+        return False
+
+
 def cmd_alert(msg):
     ts = now_bj()
     with io.open(ALERT_LOG, "a", encoding="utf-8") as f:
@@ -349,7 +374,9 @@ def cmd_alert(msg):
     with io.open(ALERT_FLAG, "w", encoding="utf-8") as f:
         f.write("定增驾驶舱流水线告警\n时间：%s\n问题：%s\n\n处置：打开 WorkBuddy 对话说明情况，可要求补发。\n"
                 % (ts, msg))
+    pushed = _push_alert_to_repo(msg)
     line("[ALERT 已记录] %s" % msg)
+    line("[告警已提交仓库 ops/ALERT.md]" if pushed else "[提示] 告警未能提交仓库（本地已记录）")
     return 0
 
 
