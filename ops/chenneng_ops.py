@@ -11,9 +11,10 @@
   python chenneng_ops.py commits [n]         最近 n 次提交
   python chenneng_ops.py quote               抓实时行情（GBK）
   python chenneng_ops.py fetch-daily <out>   下载线上 daily.json 到文件
-  python chenneng_ops.py put-daily <file>    推送 daily.json（自动 sha + 409 重试）
-  python chenneng_ops.py verify morning      校验晨报（date=今天 + 三个字段非空）
-  python chenneng_ops.py verify review       校验复盘（额外校验条数=持仓数）
+  python chenneng_ops.py put-daily <file> [morning|review]
+                                             推送 daily.json（带类型可保证提交说明可被识别）
+  python chenneng_ops.py fresh morning|review 检查今天是否已有对应提交（区分新旧内容）
+  python chenneng_ops.py verify morning|review 综合校验（含新鲜度）
   python chenneng_ops.py alert "<msg>"       写告警到 ALERT.log 并生成醒目文件
 
 退出码: 0 = 通过 / 1 = 不通过或出错
@@ -92,9 +93,52 @@ def get_holdings():
         h, _ = get_file("holdings.json")
         return h
     except Exception:
-        # 公开地址兜底
-        raw = _req("https://raw.githubusercontent.com/%s/main/holdings.json" % REPO, raw=True)
-        return json.loads(raw)
+        # 公开 API 兜底（不走 raw.githubusercontent，部分网络环境不可达）
+        d = _req("https://api.github.com/repos/%s/contents/holdings.json" % REPO)
+        return json.loads(base64.b64decode(d["content"]).decode("utf-8"))
+
+
+COMMIT_KEY = {"morning": "晨报更新", "review": "收盘复盘更新"}
+
+
+def is_fresh(kind):
+    """判断今天是否已有对应类型的提交记录。
+    返回 True=今天已发布 / False=今天未发布 / None=无法判定（接口失败）"""
+    key = COMMIT_KEY.get(kind, "更新")
+    td = today_bj()
+    try:
+        cs = _req("https://api.github.com/repos/%s/commits?per_page=10" % REPO, token())
+    except Exception:
+        try:
+            cs = _req("https://api.github.com/repos/%s/commits?per_page=10" % REPO)
+        except Exception:
+            return None
+    for c in cs:
+        msg = c["commit"]["message"].split("\n")[0]
+        if key in msg and td in msg:
+            return True
+    return False
+
+
+def cmd_fresh(kind):
+    td = today_bj()
+    r = is_fresh(kind)
+    key = COMMIT_KEY.get(kind, "更新")
+    line("== 新鲜度检查(%s) @ %s ==" % (kind, now_bj()))
+    if r is True:
+        line("[FRESH] 今日已有提交：%s %s" % (key, td))
+        return 0
+    if r is False:
+        line("[STALE] 最近提交中没有「%s %s」——今天的内容尚未发布" % (key, td))
+        try:
+            cs = _req("https://api.github.com/repos/%s/commits?per_page=3" % REPO, token())
+            for c in cs:
+                line("  - %s" % c["commit"]["message"].split("\n")[0])
+        except Exception:
+            pass
+        return 1
+    line("[UNKNOWN] 提交查询失败，无法判定新鲜度（可能限流或网络问题）")
+    return 2
 
 
 def line(t=""):
@@ -140,6 +184,10 @@ def cmd_status():
             line("  %s | %s" % (dt.strftime("%m-%d %H:%M"), c["commit"]["message"].split("\n")[0]))
     except Exception as e:
         line("提交查询失败: %s" % e)
+    # 今日提交状态（区分"今天新写的"与"昨天留下的"）
+    fm, fr = is_fresh("morning"), is_fresh("review")
+    fmt = lambda x: "已发布" if x is True else ("未发布" if x is False else "未知")
+    line("今日提交: 晨报=%s | 复盘=%s" % (fmt(fm), fmt(fr)))
     line("")
     line("判定: %s" % ("✅ 今天数据已就位" if ok else "⚠️ 需要处理"))
     return 0 if ok else 1
@@ -198,7 +246,7 @@ def cmd_fetch_daily(out):
     return 0
 
 
-def cmd_put_daily(path):
+def cmd_put_daily(path, kind=None):
     if not os.path.exists(path):
         line("[ERR] 文件不存在: %s" % path)
         return 1
@@ -209,21 +257,25 @@ def cmd_put_daily(path):
         except Exception as e:
             line("[ERR] 读取当前 sha 失败: %s" % e)
             return 1
+        # 提交说明：优先用显式类型（保证"晨报更新/收盘复盘更新"前缀可被新鲜度检查识别）
+        if kind in COMMIT_KEY:
+            msg = "%s %s" % (COMMIT_KEY[kind], new.get("date", ""))
+        else:
+            msg = "daily 更新 %s" % new.get("date", "")
+            try:
+                old, _ = get_file("daily.json")
+                if old.get("morning") != new.get("morning") and old.get("review") == new.get("review"):
+                    msg = "%s %s" % (COMMIT_KEY["morning"], new.get("date", ""))
+                elif old.get("review") != new.get("review") and old.get("morning") == new.get("morning"):
+                    msg = "%s %s" % (COMMIT_KEY["review"], new.get("date", ""))
+            except Exception:
+                pass
         payload = {
-            "message": "daily 更新 %s" % new.get("date", ""),
+            "message": msg,
             "content": base64.b64encode(
                 json.dumps(new, ensure_ascii=False, indent=1).encode("utf-8")).decode(),
             "sha": sha,
         }
-        # 依据内容判断提交说明
-        try:
-            old, _ = get_file("daily.json")
-            if old.get("morning") != new.get("morning") and old.get("review") == new.get("review"):
-                payload["message"] = "晨报更新 %s" % new.get("date", "")
-            elif old.get("review") != new.get("review") and old.get("morning") == new.get("morning"):
-                payload["message"] = "收盘复盘更新 %s" % new.get("date", "")
-        except Exception:
-            pass
         try:
             r = _req(API + "daily.json", token(), payload, method="PUT")
             line("[OK] 已推送 | %s | commit=%s" % (payload["message"], r["commit"]["sha"][:8]))
@@ -270,6 +322,13 @@ def _verify(kind):
     txt = json.dumps(d, ensure_ascii=False)
     if "http://" in txt or "https://" in txt:
         problems.append("内容中出现 http/https 链接（违反铁律）")
+    # 新鲜度校验：必须有今天对应类型的提交，否则可能是在校验昨日遗留内容
+    fresh = is_fresh(kind)
+    if fresh is False:
+        problems.append("仓库无「%s %s」提交记录，当前内容可能是昨日遗留"
+                        % (COMMIT_KEY.get(kind, "更新"), td))
+    elif fresh is None:
+        line("[WARN] 提交记录查询失败，本次跳过新鲜度校验")
     line("== 校验(%s) @ %s ==" % (kind, now_bj()))
     line("date=%s | morning=%d | review=%d | shortTerm=%d" % (d.get("date"), len(m), len(r), len(s)))
     if problems:
@@ -313,7 +372,9 @@ def main():
     if c == "fetch-daily":
         return cmd_fetch_daily(a[0] if a else "daily_current.json")
     if c == "put-daily":
-        return cmd_put_daily(a[0]) if a else 1
+        return cmd_put_daily(a[0], a[1] if len(a) > 1 else None) if a else 1
+    if c == "fresh":
+        return cmd_fresh(a[0] if a else "morning")
     if c == "verify":
         return cmd_verify(a[0] if a else "morning")
     if c == "alert":
